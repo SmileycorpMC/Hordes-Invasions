@@ -11,10 +11,10 @@ import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.commands.arguments.ResourceLocationArgument;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
-import net.smileycorp.hordes.invasions.data.HordesLogger;
-import net.smileycorp.hordes.invasions.data.tables.HordeSpawnTable;
 import net.smileycorp.hordes.invasions.capability.HordeEvent;
 import net.smileycorp.hordes.invasions.capability.HordeSavedData;
+import net.smileycorp.hordes.invasions.data.HordesLogger;
+import net.smileycorp.hordes.invasions.data.tables.HordeSpawnTable;
 import net.smileycorp.hordes.invasions.data.tables.HordeTableLoader;
 
 import java.util.Collection;

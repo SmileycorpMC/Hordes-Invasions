@@ -6,8 +6,8 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.network.NetworkEvent;
 import net.smileycorp.atlas.api.network.AbstractMessage;
-import net.smileycorp.hordes.invasions.config.CommonConfigHandler;
 import net.smileycorp.hordes.invasions.client.HordeClientHandler;
+import net.smileycorp.hordes.invasions.config.CommonConfigHandler;
 
 public class UpdateClientHordeMessage extends AbstractMessage {
     

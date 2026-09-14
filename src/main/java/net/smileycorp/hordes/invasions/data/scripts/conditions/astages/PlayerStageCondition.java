@@ -5,10 +5,10 @@ import com.google.gson.JsonElement;
 import net.smileycorp.atlas.api.data.DataType;
 import net.smileycorp.hordes.invasions.data.HordesLogger;
 import net.smileycorp.hordes.invasions.data.scripts.DataRegistry;
+import net.smileycorp.hordes.invasions.data.scripts.HordeContext;
 import net.smileycorp.hordes.invasions.data.scripts.conditions.Condition;
 import net.smileycorp.hordes.invasions.data.scripts.values.Value;
 import net.smileycorp.hordes.invasions.event.HordePlayerEvent;
-import net.smileycorp.hordes.invasions.data.scripts.HordeContext;
 
 import java.util.Locale;
 

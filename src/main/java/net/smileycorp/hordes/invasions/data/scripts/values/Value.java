@@ -2,8 +2,8 @@ package net.smileycorp.hordes.invasions.data.scripts.values;
 
 import com.google.gson.JsonObject;
 import net.smileycorp.atlas.api.data.DataType;
-import net.smileycorp.hordes.invasions.event.HordePlayerEvent;
 import net.smileycorp.hordes.invasions.data.scripts.HordeContext;
+import net.smileycorp.hordes.invasions.event.HordePlayerEvent;
 
 public interface Value<T extends Comparable<T>> {
     

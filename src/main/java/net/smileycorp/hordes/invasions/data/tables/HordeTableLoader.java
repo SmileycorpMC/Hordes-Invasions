@@ -12,7 +12,6 @@ import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.smileycorp.hordes.invasions.Constants;
 import net.smileycorp.hordes.invasions.data.HordesJsonLoader;
-import net.smileycorp.hordes.invasions.data.HordesJsonLoader;
 import net.smileycorp.hordes.invasions.data.HordesLogger;
 
 import java.util.Map;

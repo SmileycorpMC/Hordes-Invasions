@@ -14,6 +14,7 @@ import net.smileycorp.atlas.api.data.DataType;
 import net.smileycorp.atlas.api.data.LogicalOperation;
 import net.smileycorp.atlas.api.data.UnaryOperation;
 import net.smileycorp.hordes.invasions.Constants;
+import net.smileycorp.hordes.invasions.data.HordesLogger;
 import net.smileycorp.hordes.invasions.data.HordesParsingException;
 import net.smileycorp.hordes.invasions.data.scripts.conditions.*;
 import net.smileycorp.hordes.invasions.data.scripts.conditions.astages.PlayerStageCondition;
@@ -24,46 +25,42 @@ import net.smileycorp.hordes.invasions.data.scripts.functions.spawndata.*;
 import net.smileycorp.hordes.invasions.data.scripts.functions.spawnentity.*;
 import net.smileycorp.hordes.invasions.data.scripts.functions.universal.*;
 import net.smileycorp.hordes.invasions.data.scripts.values.*;
-import net.smileycorp.hordes.invasions.config.CommonConfigHandler;
-import net.smileycorp.hordes.invasions.data.HordesLogger;
 import net.smileycorp.hordes.invasions.event.HordeBuildSpawnDataEvent;
 import net.smileycorp.hordes.invasions.event.HordePlayerEvent;
 import net.smileycorp.hordes.invasions.event.HordeSpawnEntityEvent;
 
 import java.util.Map;
-import java.util.function.BiFunction;
-import java.util.function.Function;
 
 public class DataRegistry {
 
-	private static final Map<ResourceLocation, BiFunction<JsonObject, DataType, Value>> VALUES = Maps.newHashMap();
-	private static final Map<ResourceLocation, Function<JsonElement, Condition>> CONDITIONS = Maps.newHashMap();
+	private static final Map<ResourceLocation, Value.Deserializer> VALUES = Maps.newHashMap();
+	private static final Map<ResourceLocation, Condition.Deserializer> CONDITIONS = Maps.newHashMap();
 	private static final Map<ResourceLocation, Pair<Class<? extends HordePlayerEvent>, HordeFunction.Deserializer<? extends HordePlayerEvent>>> FUNCTIONS = Maps.newHashMap();
 
 	public static void init() {
-		registerValueGetters();
-		registerConditionDeserializers();
-		if (CommonConfigHandler.enableHordeEvent.get()) registerFunctionSerializers();
+		registerValues();
+		registerConditions();
+		registerFunctions();
 	}
 
-	private static void registerValueGetters() {
-		UnaryOperation.values().forEach(operation -> registerValueGetter(Constants.loc(operation.getName()),
-				(obj, type) -> UnaryOperationValue.deserialize(operation, type, obj)));
-		BinaryOperation.values().forEach(operation -> registerValueGetter(Constants.loc(operation.getName()),
-				(obj, type) -> BinaryOperationValue.deserialize(operation, type, obj)));
-		registerValueGetter(Constants.loc("weighted_random"), WeightedRandomValue::deserialize);
-		registerValueGetter(Constants.loc("level_nbt"), LevelNBTValue::deserialize);
-		registerValueGetter(Constants.loc("player_nbt"), PlayerNBTValue::deserialize);
-		registerValueGetter(Constants.loc("player_pos"), PlayerPosValue::deserialize);
-		registerValueGetter(Constants.loc("entity_nbt"), EntityNBTValue::deserialize);
-		registerValueGetter(Constants.loc("entity_pos"), EntityPosValue::deserialize);
-		registerValueGetter(Constants.loc("day"), EventDayValue::deserialize);
-		registerValueGetter(Constants.loc("spawn_table"), SpawnTableValue::deserialize);
-		registerValueGetter(Constants.loc("get_variable"), VariableValue::deserialize);
-		registerValueGetter(Constants.loc("get_global"), GlobalValue::deserialize);
+	private static void registerValues() {
+		UnaryOperation.values().forEach(operation -> registerValue(Constants.loc(operation.getName()),
+				UnaryOperationValue.of(operation)::deserialize));
+		BinaryOperation.values().forEach(operation -> registerValue(Constants.loc(operation.getName()),
+				BinaryOperationValue.of(operation)::deserialize));
+		registerValue(Constants.loc("weighted_random"), WeightedRandomValue::deserialize);
+		registerValue(Constants.loc("level_nbt"), LevelNBTValue::deserialize);
+		registerValue(Constants.loc("player_nbt"), PlayerNBTValue::deserialize);
+		registerValue(Constants.loc("player_pos"), PlayerPosValue::deserialize);
+		registerValue(Constants.loc("entity_nbt"), EntityNBTValue::deserialize);
+		registerValue(Constants.loc("entity_pos"), EntityPosValue::deserialize);
+		registerValue(Constants.loc("day"), EventDayValue::deserialize);
+		registerValue(Constants.loc("spawn_table"), SpawnTableValue::deserialize);
+		registerValue(Constants.loc("get_variable"), VariableValue::deserialize);
+		registerValue(Constants.loc("get_global"), GlobalValue::deserialize);
 	}
 
-	public static void registerConditionDeserializers() {
+	public static void registerConditions() {
 		for (LogicalOperation operation : LogicalOperation.values())
 			registerConditionDeserializer(Constants.loc(operation.getName()), e -> LogicalCondition.deserialize(operation, e));
 		registerConditionDeserializer(Constants.loc("not"), NotCondition::deserialize);
@@ -84,56 +81,7 @@ public class DataRegistry {
 				new ResourceLocation("astages:player_stage"), PlayerStageCondition::deserialize);
 	}
 
-	public static Value readValue(DataType type, JsonObject json) {
-		if (json.has("name") && json.has("value")) {
-			try {
-				ResourceLocation loc = new ResourceLocation(json.get("name").getAsString());
-				BiFunction<JsonObject, DataType, Value> getter = VALUES.get(loc);
-				if (getter == null) throw new NullPointerException("value getter " + loc + " is not registered");
-				return getter.apply(json, type);
-			} catch (Exception e) {
-				HordesLogger.logError("Failed to read value " + json, e);
-			}
-		}
-		return null;
-	}
-
-	public static Condition readCondition(JsonObject json) {
-		if (json.has("name") && json.has("value")) {
-			try {
-				ResourceLocation loc = new ResourceLocation(json.get("name").getAsString());
-				Function<JsonElement, Condition> deserializer = CONDITIONS.get(loc);
-				if (deserializer == null) throw new NullPointerException("condition " + loc + " is not registered");
-				return deserializer.apply(json.get("value"));
-			} catch (Exception e) {
-				HordesLogger.logError("Failed to read condition " + json, e);
-			}
-		}
-		return null;
-	}
-
-	public static void registerValueGetter(ResourceLocation name, BiFunction<JsonObject, DataType, Value> getter) {
-		VALUES.put(name, getter);
-	}
-
-	public static void registerConditionDeserializer(ResourceLocation name, Function<JsonElement, Condition> serializer) {
-		CONDITIONS.put(name, serializer);
-	}
-
-    public static CompoundTag parseNBT(String name, String nbtstring) {
-        CompoundTag nbt = null;
-        try {
-            CompoundTag parsed = TagParser.parseTag(nbtstring);
-            if (parsed != null) nbt = parsed;
-            else throw new NullPointerException("Parsed NBT is null.");
-        } catch (Exception e) {
-            HordesLogger.logError("Failed to read config, " + e.getCause() + " " + e.getMessage(), e);
-            HordesLogger.logError("Error parsing nbt for entity " + name + " " + e.getMessage(), e);
-        }
-        return nbt;
-    }
-
-	public static void registerFunctionSerializers() {
+	public static void registerFunctions() {
 		//universal functions
 		registerNestedFunction(Constants.loc("multiple"), MultipleFunction::deserialize);
 		registerNestedFunction(Constants.loc("random"), RandomFunction::deserialize);
@@ -170,6 +118,63 @@ public class DataRegistry {
 		registerFunction(Constants.loc("set_entity_loot_table"), HordeSpawnEntityEvent.class, SetEntityLootTableFunction::deserialize);
 	}
 
+	public static void registerValue(ResourceLocation name, Value.Deserializer value) {
+		VALUES.put(name, value);
+	}
+
+	public static void registerConditionDeserializer(ResourceLocation name, Condition.Deserializer condition) {
+		CONDITIONS.put(name, condition);
+	}
+
+	public static <T extends HordePlayerEvent> void registerFunction(ResourceLocation name, Class<T> clazz, HordeFunction.Deserializer<T> serializer) {
+		if (clazz == null) return;
+		FUNCTIONS.put(name, Pair.of(clazz, serializer));
+	}
+
+	public static <T extends HordePlayerEvent> void registerInstructionFunction(ResourceLocation name, HordeFunction<HordePlayerEvent> function) {
+		FUNCTIONS.put(name, Pair.of(HordePlayerEvent.class, json -> function));
+	}
+
+	public static void registerNestedFunction(ResourceLocation name, NestedHordeFunction.Deserializer<?> serializer) {
+		FUNCTIONS.put(name, Pair.of(null, serializer));
+	}
+
+	public static <T extends Comparable<T>> Value<T> readValue(DataType<T> type, JsonElement json) throws Exception {
+		if (json instanceof JsonNull) throw new HordesParsingException("No value present");
+		if (json.isJsonObject()) {
+			JsonObject obj = json.getAsJsonObject();
+			if (obj.has("name") && obj.has("value")) {
+				try {
+					ResourceLocation loc = new ResourceLocation(obj.get("name").getAsString());
+					Value.Deserializer getter = VALUES.get(loc);
+					if (getter == null) throw new NullPointerException("value getter " + loc + " is not registered");
+					return getter.apply(obj, type);
+				} catch (Exception e) {
+					HordesLogger.logError("Failed to read value " + obj, e);
+				}
+			}
+			return null;
+		} else if (json.isJsonArray()) {
+			return new RandomListValue(type, json.getAsJsonArray());
+		}
+		T v = type.readFromJson(json);
+		return ctx -> v;
+	}
+
+	public static Condition readCondition(JsonObject json) {
+		if (json.has("name") && json.has("value")) {
+			try {
+				ResourceLocation loc = new ResourceLocation(json.get("name").getAsString());
+				Condition.Deserializer deserializer = CONDITIONS.get(loc);
+				if (deserializer == null) throw new NullPointerException("condition " + loc + " is not registered");
+				return deserializer.apply(json.get("value"));
+			} catch (Exception e) {
+				HordesLogger.logError("Failed to read condition " + json, e);
+			}
+		}
+		return null;
+	}
+
 	public static <T extends HordePlayerEvent> Pair<Class<T>, HordeFunction<T>> readFunction(JsonObject json) throws Exception {
 		if (!(json.has("function"))) return Pair.of(null, null);
 		ResourceLocation loc = new ResourceLocation(json.get("function").getAsString());
@@ -182,27 +187,17 @@ public class DataRegistry {
 				: (Class<T>) pair.getFirst(), function);
 	}
 
-	public static void registerNestedFunction(ResourceLocation name, NestedHordeFunction.Deserializer<?> serializer) {
-		FUNCTIONS.put(name, Pair.of(null, serializer));
-	}
-
-	public static <T extends HordePlayerEvent> void registerInstructionFunction(ResourceLocation name, HordeFunction<HordePlayerEvent> function) {
-		FUNCTIONS.put(name, Pair.of(HordePlayerEvent.class, json -> function));
-	}
-
-	public static <T extends HordePlayerEvent> void registerFunction(ResourceLocation name, Class<T> clazz, HordeFunction.Deserializer<T> serializer) {
-		if (clazz == null) return;
-		FUNCTIONS.put(name, Pair.of(clazz, serializer));
-	}
-
-	public static <T extends Comparable<T>> Value<T> readValue(DataType<T> type, JsonElement value) throws Exception {
-		if (value instanceof JsonNull) throw new HordesParsingException("No value present");
-		if (value.isJsonObject()) {
-			return readValue(type, value.getAsJsonObject());
-		} else if (value.isJsonArray()) {
-			return new RandomValue(type, value.getAsJsonArray());
+	public static CompoundTag parseNBT(String name, String nbtstring) {
+		CompoundTag nbt = null;
+		try {
+			CompoundTag parsed = TagParser.parseTag(nbtstring);
+			if (parsed != null) nbt = parsed;
+			else throw new NullPointerException("Parsed NBT is null.");
+		} catch (Exception e) {
+			HordesLogger.logError("Failed to read config, " + e.getCause() + " " + e.getMessage(), e);
+			HordesLogger.logError("Error parsing nbt for entity " + name + " " + e.getMessage(), e);
 		}
-		T v = type.readFromJson(value);
-		return ctx -> v;
+		return nbt;
 	}
+
 }

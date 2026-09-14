@@ -1,12 +1,12 @@
 package net.smileycorp.hordes.invasions.data.scripts.functions.spawndata;
 
 import com.google.gson.JsonElement;
-import net.smileycorp.hordes.invasions.data.HordesLogger;
-import net.smileycorp.hordes.invasions.event.HordeBuildSpawnDataEvent;
 import net.smileycorp.hordes.invasions.data.HordeSpawnType;
 import net.smileycorp.hordes.invasions.data.HordeSpawnTypes;
+import net.smileycorp.hordes.invasions.data.HordesLogger;
 import net.smileycorp.hordes.invasions.data.scripts.HordeContext;
 import net.smileycorp.hordes.invasions.data.scripts.functions.HordeFunction;
+import net.smileycorp.hordes.invasions.event.HordeBuildSpawnDataEvent;
 
 public class SetSpawnTypeFunction implements HordeFunction<HordeBuildSpawnDataEvent> {
 

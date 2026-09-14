@@ -7,9 +7,9 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.eventbus.api.Event;
 import net.smileycorp.atlas.api.data.DataType;
-import net.smileycorp.hordes.invasions.event.HordePlayerEvent;
-import net.smileycorp.hordes.invasions.data.HordeSpawnData;
 import net.smileycorp.hordes.invasions.capability.HordeEvent;
+import net.smileycorp.hordes.invasions.data.HordeSpawnData;
+import net.smileycorp.hordes.invasions.event.HordePlayerEvent;
 
 import java.util.Map;
 

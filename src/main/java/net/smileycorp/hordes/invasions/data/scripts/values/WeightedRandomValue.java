@@ -7,8 +7,8 @@ import net.smileycorp.atlas.api.data.DataType;
 import net.smileycorp.atlas.api.util.WeightedOutputs;
 import net.smileycorp.hordes.invasions.data.HordesLogger;
 import net.smileycorp.hordes.invasions.data.scripts.DataRegistry;
-import net.smileycorp.hordes.invasions.event.HordePlayerEvent;
 import net.smileycorp.hordes.invasions.data.scripts.HordeContext;
+import net.smileycorp.hordes.invasions.event.HordePlayerEvent;
 
 import java.util.Map;
 
@@ -25,7 +25,7 @@ public class WeightedRandomValue<T extends Comparable<T>> implements Value<T> {
         return outputs.getResult(ctx.getRandom()).get(ctx);
     }
     
-    public static <T extends Number & Comparable<T>> WeightedRandomValue<T> deserialize(JsonObject json, DataType<T> type) {
+    public static <T extends Comparable<T>> WeightedRandomValue<T> deserialize(JsonObject json, DataType<T> type) {
         Map<Value<T>, Integer> values = Maps.newHashMap();
         for (JsonElement element : json.get("value").getAsJsonArray()) {
             try {

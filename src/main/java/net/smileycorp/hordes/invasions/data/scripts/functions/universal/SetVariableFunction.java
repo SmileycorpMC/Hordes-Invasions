@@ -5,17 +5,17 @@ import com.google.gson.JsonObject;
 import net.smileycorp.atlas.api.data.DataType;
 import net.smileycorp.hordes.invasions.data.HordesLogger;
 import net.smileycorp.hordes.invasions.data.scripts.DataRegistry;
-import net.smileycorp.hordes.invasions.data.scripts.values.Value;
-import net.smileycorp.hordes.invasions.event.HordePlayerEvent;
 import net.smileycorp.hordes.invasions.data.scripts.HordeContext;
 import net.smileycorp.hordes.invasions.data.scripts.functions.HordeFunction;
+import net.smileycorp.hordes.invasions.data.scripts.values.Value;
+import net.smileycorp.hordes.invasions.event.HordePlayerEvent;
 
-public class SetVariableFunction implements HordeFunction<HordePlayerEvent> {
+public class SetVariableFunction<T extends Comparable<T>> implements HordeFunction<HordePlayerEvent> {
 
     private final Value<String> variable;
-    private final Value<?> value;
+    private final Value<T> value;
 
-    public SetVariableFunction(Value<String> variable, Value<?> value) {
+    public SetVariableFunction(Value<String> variable, Value<T> value) {
         this.variable =  variable;
         this.value = value;
     }

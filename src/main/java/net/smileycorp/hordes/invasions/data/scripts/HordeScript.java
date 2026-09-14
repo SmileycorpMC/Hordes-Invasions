@@ -6,12 +6,12 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.resources.ResourceLocation;
-import net.smileycorp.hordes.invasions.data.scripts.conditions.Condition;
 import net.smileycorp.hordes.invasions.data.HordesLogger;
-import net.smileycorp.hordes.invasions.event.HordePlayerEvent;
+import net.smileycorp.hordes.invasions.data.scripts.conditions.Condition;
 import net.smileycorp.hordes.invasions.data.scripts.functions.HordeFunction;
 import net.smileycorp.hordes.invasions.data.scripts.functions.NestedHordeFunction;
 import net.smileycorp.hordes.invasions.data.scripts.functions.universal.MultipleFunction;
+import net.smileycorp.hordes.invasions.event.HordePlayerEvent;
 
 import java.util.List;
 

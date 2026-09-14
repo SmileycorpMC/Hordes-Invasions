@@ -3,8 +3,8 @@ package net.smileycorp.hordes.invasions.data.scripts.values;
 import net.minecraft.nbt.CompoundTag;
 import net.smileycorp.atlas.api.data.DataType;
 import net.smileycorp.atlas.api.data.NBTExplorer;
-import net.smileycorp.hordes.invasions.event.HordePlayerEvent;
 import net.smileycorp.hordes.invasions.data.scripts.HordeContext;
+import net.smileycorp.hordes.invasions.event.HordePlayerEvent;
 
 public abstract class NBTValue<T extends Comparable<T>> implements Value<T> {
 

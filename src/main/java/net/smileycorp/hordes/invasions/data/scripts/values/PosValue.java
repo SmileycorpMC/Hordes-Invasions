@@ -3,8 +3,8 @@ package net.smileycorp.hordes.invasions.data.scripts.values;
 import net.minecraft.core.Direction.Axis;
 import net.minecraft.world.entity.LivingEntity;
 import net.smileycorp.atlas.api.data.DataType;
-import net.smileycorp.hordes.invasions.event.HordePlayerEvent;
 import net.smileycorp.hordes.invasions.data.scripts.HordeContext;
+import net.smileycorp.hordes.invasions.event.HordePlayerEvent;
 
 public abstract class PosValue<T extends Comparable<T>> implements Value<T> {
 

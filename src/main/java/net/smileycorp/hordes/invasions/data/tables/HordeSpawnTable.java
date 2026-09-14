@@ -10,8 +10,8 @@ import net.minecraft.world.entity.Mob;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.server.ServerLifecycleHooks;
 import net.smileycorp.atlas.api.util.WeightedOutputs;
-import net.smileycorp.hordes.invasions.data.scripts.DataRegistry;
 import net.smileycorp.hordes.invasions.data.HordesLogger;
+import net.smileycorp.hordes.invasions.data.scripts.DataRegistry;
 
 import java.util.AbstractMap;
 import java.util.ArrayList;

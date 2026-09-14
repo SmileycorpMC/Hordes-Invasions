@@ -5,10 +5,10 @@ import net.minecraft.nbt.CompoundTag;
 import net.smileycorp.atlas.api.data.DataType;
 import net.smileycorp.hordes.invasions.data.HordesLogger;
 import net.smileycorp.hordes.invasions.data.scripts.DataRegistry;
-import net.smileycorp.hordes.invasions.data.scripts.values.Value;
-import net.smileycorp.hordes.invasions.event.HordeSpawnEntityEvent;
 import net.smileycorp.hordes.invasions.data.scripts.HordeContext;
 import net.smileycorp.hordes.invasions.data.scripts.functions.HordeFunction;
+import net.smileycorp.hordes.invasions.data.scripts.values.Value;
+import net.smileycorp.hordes.invasions.event.HordeSpawnEntityEvent;
 
 public class SetEntityLootTableFunction implements HordeFunction<HordeSpawnEntityEvent> {
     

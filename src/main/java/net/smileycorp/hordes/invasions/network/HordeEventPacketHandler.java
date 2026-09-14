@@ -11,8 +11,8 @@ import net.smileycorp.atlas.api.network.AbstractMessage;
 import net.smileycorp.atlas.api.network.GenericStringMessage;
 import net.smileycorp.atlas.api.network.NetworkUtils;
 import net.smileycorp.hordes.invasions.Constants;
-import net.smileycorp.hordes.invasions.config.CommonConfigHandler;
 import net.smileycorp.hordes.invasions.client.HordeClientHandler;
+import net.smileycorp.hordes.invasions.config.CommonConfigHandler;
 
 import java.util.function.Supplier;
 

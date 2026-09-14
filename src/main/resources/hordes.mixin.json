@@ -4,9 +4,9 @@
 	"compatibilityLevel": "JAVA_17",
 	"refmap": "hordes.refmap.json",
     "client": [
-      "net.smileycorp.hordes.invasions.mixin.MixinLevelRenderer",
       "MixinLivingEntityRenderer",
-      "MixinVillagerProfessionLayer"
+      "MixinVillagerProfessionLayer",
+      "net.smileycorp.hordes.invasions.mixin.MixinLevelRenderer"
     ],
     "server": [
       "net.smileycorp.hordes.invasions.mixin.MixinServerLevel"
@@ -15,17 +15,14 @@
       "MixinAbstractHorse",
       "MixinAbstractPiglin",
       "MixinDamageSource",
-      "net.smileycorp.hordes.invasions.mixin.MixinEntity",
       "MixinEvoker",
       "MixinHoglin",
       "MixinLivingEntity",
-      "net.smileycorp.hordes.invasions.mixin.MixinMob",
       "MixinPiglin",
       "MixinPiglinAi",
       "MixinPiglinBrute",
       "MixinPillager",
       "MixinRavager",
-      "net.smileycorp.hordes.invasions.mixin.MixinServerPlayer",
       "MixinVex",
       "MixinVindicator",
       "MixinWitch",
@@ -33,7 +30,10 @@
       "MixinZombie",
       "MixinZombieHorse",
       "MixinZombieVillager",
-      "MixinZombifiedPiglin"
+      "MixinZombifiedPiglin",
+      "net.smileycorp.hordes.invasions.mixin.MixinEntity",
+      "net.smileycorp.hordes.invasions.mixin.MixinMob",
+      "net.smileycorp.hordes.invasions.mixin.MixinServerPlayer"
     ],
 	"minVersion": "0.8"
 }

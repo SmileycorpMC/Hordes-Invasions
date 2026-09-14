@@ -8,8 +8,8 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
 import net.smileycorp.atlas.api.data.DataType;
 import net.smileycorp.hordes.invasions.Constants;
-import net.smileycorp.hordes.invasions.config.CommonConfigHandler;
 import net.smileycorp.hordes.invasions.capability.HordeEvent;
+import net.smileycorp.hordes.invasions.config.CommonConfigHandler;
 import net.smileycorp.hordes.invasions.data.tables.HordeSpawnTable;
 import net.smileycorp.hordes.invasions.data.tables.HordeTableLoader;
 

@@ -28,14 +28,14 @@ import net.minecraftforge.eventbus.api.Event.Result;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.server.ServerLifecycleHooks;
-import net.smileycorp.hordes.invasions.capability.Playtime;
-import net.smileycorp.hordes.invasions.config.CommonConfigHandler;
 import net.smileycorp.hordes.invasions.capability.HordeEvent;
 import net.smileycorp.hordes.invasions.capability.HordeSavedData;
 import net.smileycorp.hordes.invasions.capability.HordeSpawn;
+import net.smileycorp.hordes.invasions.capability.Playtime;
+import net.smileycorp.hordes.invasions.config.CommonConfigHandler;
+import net.smileycorp.hordes.invasions.data.HordesLogger;
 import net.smileycorp.hordes.invasions.data.scripts.HordeScriptLoader;
 import net.smileycorp.hordes.invasions.data.tables.HordeTableLoader;
-import net.smileycorp.hordes.invasions.data.HordesLogger;
 
 import java.util.List;
 import java.util.Optional;

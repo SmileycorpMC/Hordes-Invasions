@@ -9,8 +9,8 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.biome.Biome;
 import net.smileycorp.hordes.invasions.data.HordesLogger;
-import net.smileycorp.hordes.invasions.event.HordePlayerEvent;
 import net.smileycorp.hordes.invasions.data.scripts.HordeContext;
+import net.smileycorp.hordes.invasions.event.HordePlayerEvent;
 
 import java.util.List;
 

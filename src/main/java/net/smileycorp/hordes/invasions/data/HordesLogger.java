@@ -7,7 +7,6 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.contents.LiteralContents;
 import net.minecraft.resources.ResourceLocation;
-import net.smileycorp.hordes.invasions.data.HordesParsingException;
 import net.smileycorp.hordes.invasions.Constants;
 import net.smileycorp.hordes.invasions.capability.HordeSavedData;
 import org.apache.logging.log4j.LogManager;

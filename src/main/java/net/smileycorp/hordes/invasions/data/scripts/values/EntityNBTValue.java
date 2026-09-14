@@ -6,8 +6,8 @@ import net.minecraft.nbt.CompoundTag;
 import net.smileycorp.atlas.api.data.DataType;
 import net.smileycorp.hordes.invasions.data.HordesLogger;
 import net.smileycorp.hordes.invasions.data.scripts.DataRegistry;
-import net.smileycorp.hordes.invasions.event.HordePlayerEvent;
 import net.smileycorp.hordes.invasions.data.scripts.HordeContext;
+import net.smileycorp.hordes.invasions.event.HordePlayerEvent;
 
 public class EntityNBTValue<T extends Comparable<T>> extends NBTValue<T> {
 

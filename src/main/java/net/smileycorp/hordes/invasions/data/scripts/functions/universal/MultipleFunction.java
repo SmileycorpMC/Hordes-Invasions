@@ -6,12 +6,11 @@ import com.google.gson.JsonObject;
 import com.mojang.datafixers.util.Pair;
 import net.smileycorp.hordes.invasions.data.HordesLogger;
 import net.smileycorp.hordes.invasions.data.scripts.DataRegistry;
-import net.smileycorp.hordes.invasions.data.scripts.DataRegistry;
-import net.smileycorp.hordes.invasions.data.scripts.conditions.Condition;
-import net.smileycorp.hordes.invasions.event.HordePlayerEvent;
 import net.smileycorp.hordes.invasions.data.scripts.HordeContext;
+import net.smileycorp.hordes.invasions.data.scripts.conditions.Condition;
 import net.smileycorp.hordes.invasions.data.scripts.functions.HordeFunction;
 import net.smileycorp.hordes.invasions.data.scripts.functions.NestedHordeFunction;
+import net.smileycorp.hordes.invasions.event.HordePlayerEvent;
 
 import java.util.List;
 
