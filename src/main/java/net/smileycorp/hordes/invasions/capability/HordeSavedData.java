@@ -1,0 +1,126 @@
+package net.smileycorp.hordes.invasions.capability;
+
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.mojang.authlib.GameProfile;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.saveddata.SavedData;
+import net.minecraftforge.server.ServerLifecycleHooks;
+import net.smileycorp.atlas.api.util.DataUtils;
+import net.smileycorp.hordes.invasions.config.CommonConfigHandler;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.stream.Stream;
+
+public class HordeSavedData extends SavedData {
+
+	public static final String DATA = "hordes";
+	protected ServerLevel level = null;
+
+	private final Map<UUID, HordeEvent> events = Maps.newHashMap();
+
+	public void load(CompoundTag nbt) {
+		if (nbt.contains("events")) {
+			CompoundTag events = nbt.getCompound("events");
+			for (String uuid : events.getAllKeys()) {
+				if (!DataUtils.isValidUUID(uuid)) return;
+				HordeEvent horde = new HordeEvent(this);
+				horde.readFromNBT(events.getCompound(uuid));
+				this.events.put(UUID.fromString(uuid), horde);
+			}
+		}
+	}
+
+	@Override
+	public CompoundTag save(CompoundTag nbt) {
+		CompoundTag events = new CompoundTag();
+		for (Entry<UUID, HordeEvent> entry : this.events.entrySet()) {
+			UUID uuid = entry.getKey();
+			CompoundTag tag = new CompoundTag();
+			events.put(uuid.toString(), entry.getValue().writeToNBT(tag, uuid));
+		}
+		nbt.put("events", events);
+		return nbt;
+	}
+
+	public int getNextDay(int day) {
+		return day + CommonConfigHandler.hordeSpawnDays.get() + getRandom(day).nextInt(CommonConfigHandler.hordeSpawnVariation.get() + 1);
+	}
+
+	public HordeEvent getEvent(ServerPlayer player) {
+		return player == null ? null : getEvent(player.getUUID());
+	}
+
+	public HordeEvent getEvent(UUID uuid) {
+		if (uuid == null) return null;
+		if (!events.containsKey(uuid)) events.put(uuid, new HordeEvent(this));
+		return events.get(uuid);
+	}
+
+	public String getName(UUID uuid) {
+		Player player = ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayer(uuid);
+		if (player != null) return player.getName().getString();
+		Optional<GameProfile> profile = ServerLifecycleHooks.getCurrentServer().getProfileCache().get(uuid);
+		if (profile.isPresent() && profile.get().getName() != null) return profile.get().getName();
+		return uuid.toString();
+	}
+
+	public boolean isHordeNight(ServerPlayer player) {
+		HordeEvent horde = getEvent(player);
+		return horde != null && horde.isHordeDay(player);
+	}
+
+	public Stream<ServerPlayer> getPlayersWithHorde() {
+		return level.players().stream().filter(this::isHordeNight);
+	}
+
+	public RandomSource getRandom(int day) {
+		return RandomSource.create((level.getSeed() % Short.MAX_VALUE) * day);
+	}
+
+	@Override
+	public String toString() {
+		return super.toString() + "[current_day: " + (int)Math.floor((float)level.getDayTime() / (float) CommonConfigHandler.dayLength.get()) +
+				", current_time: " + level.getDayTime() % CommonConfigHandler.dayLength.get();
+	}
+
+	public List<String> getDebugText() {
+		List<String> out = Lists.newArrayList();
+		out.add(toString());
+		out.add("Existing events: {");
+		for (Entry<UUID, HordeEvent> entry : events.entrySet()) {
+			out.add("	" +entry.getValue().toString(getName(entry.getKey())));
+			out.addAll(entry.getValue().getEntityStrings());
+		}
+		out.add("}");
+		return out;
+	}
+
+	public static HordeSavedData getData(ServerLevel level) {
+		HordeSavedData data = level.getChunkSource().getDataStorage().computeIfAbsent((nbt) -> getDataFromNBT(level, nbt), () -> getCleanData(level), DATA);
+		if (data == null) data = getCleanData(level);
+		level.getChunkSource().getDataStorage().set(DATA, data);
+		return data;
+	}
+
+	private static HordeSavedData getDataFromNBT(ServerLevel level, CompoundTag nbt) {
+		HordeSavedData data = getCleanData(level);
+		data.load(nbt);
+		return data;
+	}
+
+	public static HordeSavedData getCleanData(ServerLevel level) {
+		HordeSavedData data = new HordeSavedData();
+		data.level = level;
+		return data;
+	}
+
+}

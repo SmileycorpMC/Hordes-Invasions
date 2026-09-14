@@ -1,0 +1,176 @@
+package net.smileycorp.hordes.invasions.data;
+
+import com.google.common.collect.Lists;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.StringTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.resources.ResourceLocation;
+import net.smileycorp.atlas.api.data.DataType;
+import net.smileycorp.hordes.invasions.Constants;
+import net.smileycorp.hordes.invasions.config.CommonConfigHandler;
+import net.smileycorp.hordes.invasions.capability.HordeEvent;
+import net.smileycorp.hordes.invasions.data.tables.HordeSpawnTable;
+import net.smileycorp.hordes.invasions.data.tables.HordeTableLoader;
+
+import java.util.Collection;
+import java.util.List;
+
+public class HordeSpawnData {
+    
+    private HordeSpawnTable table = HordeTableLoader.INSTANCE.getFallbackTable();
+    private HordeSpawnType spawnType = HordeSpawnTypes.AVOID_FLUIDS;
+    private ResourceLocation spawnSound = Constants.HORDE_SOUND;
+    private String startMessage = Constants.hordeEventStart;
+    private String endMessage = Constants.hordeEventEnd;
+    private int spawnDuration = CommonConfigHandler.hordeSpawnDuration.get();
+    private int spawnInterval = CommonConfigHandler.hordeSpawnInterval.get();
+    private int spawnAmount;
+    private double entitySpeed = CommonConfigHandler.hordeEntitySpeed.get();
+    private final List<String> commands = Lists.newArrayList();
+    private CompoundTag globalVariables = new CompoundTag();
+
+    public HordeSpawnData(HordeEvent horde) {
+        spawnAmount = (int) (CommonConfigHandler.hordeSpawnAmount.get() * (1 + (horde.getDay() / CommonConfigHandler.hordeSpawnDays.get())
+                * (CommonConfigHandler.hordeSpawnMultiplier.get() - 1)));
+    }
+    
+    public HordeSpawnData(HordeEvent horde, CompoundTag tag) {
+        this(horde);
+        if (tag.contains("table")) table = HordeTableLoader.INSTANCE.getTable(new ResourceLocation(tag.getString("table")));
+        if (tag.contains("spawnType")) spawnType = HordeSpawnTypes.fromNBT(tag.get("spawnType"));
+        if (tag.contains("spawnSound")) spawnSound = new ResourceLocation(tag.getString("spawnSound"));
+        if (tag.contains("startMessage")) startMessage = tag.getString("startMessage");
+        if (tag.contains("endMessage")) endMessage = tag.getString("endMessage");
+        if (tag.contains("spawnDuration")) spawnDuration = tag.getInt("spawnDuration");
+        if (tag.contains("spawnInterval")) spawnInterval = tag.getInt("spawnInterval");
+        if (tag.contains("spawnAmount")) spawnAmount = tag.getInt("spawnAmount");
+        if (tag.contains("entitySpeed")) entitySpeed = tag.getDouble("entitySpeed");
+        if (tag.contains("commands")) for (Tag command : tag.getList("commands", 8)) commands.add(command.getAsString());
+        if (tag.contains("globalVariables")) globalVariables = tag.getCompound("globalVariables");
+    }
+    
+    public CompoundTag save() {
+        CompoundTag tag = new CompoundTag();
+        if (table != null) tag.putString("table", table.getName().toString());
+        if (spawnType != null) tag.put("spawnType", HordeSpawnTypes.toNbt(spawnType));
+        if (spawnSound != null) tag.putString("spawnSound", spawnSound.toString());
+        if (startMessage != null) tag.putString("startMessage", startMessage);
+        if (endMessage != null) tag.putString("endMessage", endMessage);
+        tag.putInt("spawnDuration", spawnDuration);
+        tag.putInt("spawnInterval", spawnInterval);
+        tag.putInt("spawnAmount", spawnAmount);
+        tag.putDouble("entitySpeed", entitySpeed);
+        if (!commands.isEmpty()) {
+            ListTag commands = new ListTag();
+            for (String command : this.commands) commands.add(StringTag.valueOf(command));
+            tag.put("commands", commands);
+        }
+        tag.put("globalVariables", globalVariables);
+        return tag;
+    }
+    
+    public HordeSpawnTable getTable() {
+        return table;
+    }
+    
+    public void setTable(HordeSpawnTable table) {
+        this.table = table;
+    }
+    
+    public HordeSpawnType getSpawnType() {
+        return spawnType;
+    }
+    
+    public void setSpawnType(HordeSpawnType spawnType) {
+        this.spawnType = spawnType;
+    }
+    
+    public ResourceLocation getSpawnSound() {
+        return spawnSound;
+    }
+    
+    public void setSpawnSound(ResourceLocation spawnSound) {
+        this.spawnSound = spawnSound;
+    }
+    
+    public String getStartMessage() {
+        return startMessage;
+    }
+    
+    public void setStartMessage(String startMessage) {
+        this.startMessage = startMessage;
+    }
+    
+    public String getEndMessage() {
+        return endMessage;
+    }
+    
+    public void setEndMessage(String endMessage) {
+        this.endMessage = endMessage;
+    }
+    
+    public int getSpawnDuration() {
+        return spawnDuration;
+    }
+    
+    public void setSpawnDuration(int spawnDuration) {
+        this.spawnDuration = spawnDuration;
+    }
+    
+    public int getSpawnInterval() {
+        return spawnInterval;
+    }
+    
+    public void setSpawnInterval(int spawnInterval) {
+        this.spawnInterval = spawnInterval;
+    }
+    
+    public int getSpawnAmount() {
+        return spawnAmount;
+    }
+    
+    public void setSpawnAmount(int spawnAmount) {
+        this.spawnAmount = spawnAmount;
+    }
+    
+    public double getEntitySpeed() {
+        return entitySpeed;
+    }
+    
+    public void setEntitySpeed(double entitySpeed) {
+        this.entitySpeed = entitySpeed;
+    }
+
+    public void addCommand(String command) {
+        commands.add(command);
+    }
+
+    public Collection<String> getCommands() {
+        return Lists.newArrayList(commands);
+    }
+
+    public <T extends Comparable<T>> void setGlobal(String key, T value) {
+        DataType.of(value).writeToNBT(globalVariables, key, value);
+    }
+
+    public <T extends Comparable<T>> T getGlobal(String key, DataType<T> type) {
+       return type.readFromNBT(globalVariables, key);
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder(getClass().getSimpleName()+"[");
+        builder.append("table=" + table.getName() + ", ");
+        builder.append("spawnType=" + HordeSpawnTypes.toString(spawnType) + ", ");
+        builder.append("spawnSound=" + spawnSound + ", ");
+        builder.append("startMessage=" + startMessage + ", ");
+        builder.append("endMessage=" + endMessage + ", ");
+        builder.append("spawnDuration=" + spawnDuration + ", ");
+        builder.append("spawnInterval=" + spawnInterval + ", ");
+        builder.append("spawnAmount=" + spawnAmount + ", ");
+        builder.append("entitySpeed=" + entitySpeed + "]");
+        return builder.toString();
+    }
+
+}

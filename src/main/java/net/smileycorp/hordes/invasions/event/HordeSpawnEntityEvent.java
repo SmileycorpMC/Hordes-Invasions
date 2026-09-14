@@ -1,0 +1,38 @@
+package net.smileycorp.hordes.invasions.event;
+
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.eventbus.api.Cancelable;
+import net.smileycorp.hordes.invasions.capability.HordeEvent;
+
+@Cancelable
+public class HordeSpawnEntityEvent extends HordePlayerEvent {
+	
+	protected Mob entity;
+	protected Vec3 pos;
+
+	public HordeSpawnEntityEvent(ServerPlayer player, Mob entity, Vec3 pos, HordeEvent horde) {
+		super(player, horde);
+		this.entity = entity;
+		this.pos = pos;
+	}
+	
+	@Override
+	public Mob getEntity() {
+		return entity;
+	}
+	
+	public void setEntity(Mob entity) {
+		this.entity = entity;
+	}
+	
+	public Vec3 getPos() {
+		return pos;
+	}
+	
+	public void setPos(Vec3 pos) {
+		this.pos = pos;
+	}
+
+}

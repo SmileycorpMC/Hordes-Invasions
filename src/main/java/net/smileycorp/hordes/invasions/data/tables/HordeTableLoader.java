@@ -1,0 +1,65 @@
+package net.smileycorp.hordes.invasions.data.tables;
+
+import com.google.common.collect.Maps;
+import com.google.gson.JsonElement;
+import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.suggestion.Suggestions;
+import com.mojang.brigadier.suggestion.SuggestionsBuilder;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.SharedSuggestionProvider;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.util.profiling.ProfilerFiller;
+import net.smileycorp.hordes.invasions.Constants;
+import net.smileycorp.hordes.invasions.data.HordesJsonLoader;
+import net.smileycorp.hordes.invasions.data.HordesJsonLoader;
+import net.smileycorp.hordes.invasions.data.HordesLogger;
+
+import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+
+public class HordeTableLoader extends HordesJsonLoader {
+
+    public static ResourceLocation FALLBACK_TABLE = Constants.loc("fallback");
+    public static HordeTableLoader INSTANCE = new HordeTableLoader();
+
+    private final Map<ResourceLocation, HordeSpawnTable> SPAWN_TABLES = Maps.newHashMap();
+
+    public HordeTableLoader() {
+        super("horde_data/tables");
+    }
+
+    @Override
+    protected void apply(Map<ResourceLocation, JsonElement> map, ResourceManager manager, ProfilerFiller profiller) {
+        HordesLogger.blankLine();
+        HordesLogger.heading("LOADING HORDE TABLES");
+        printDeferredExceptions();
+        SPAWN_TABLES.clear();
+        for (Map.Entry<ResourceLocation, JsonElement> entry : map.entrySet()) {
+            try {
+                HordesLogger.blankLine();
+                HordeSpawnTable table = HordeSpawnTable.deserialize(entry.getKey(), entry.getValue());
+                if (table == null) throw new NullPointerException();
+                SPAWN_TABLES.put(entry.getKey(), table);
+                HordesLogger.logInfo("loaded horde table " + entry.getKey());
+            } catch (Exception e) {
+                HordesLogger.logError("Failed to parse table " + entry.getKey(), e);
+            }
+        }
+    }
+
+    public HordeSpawnTable getFallbackTable() {
+        return getTable(FALLBACK_TABLE);
+    }
+
+    public HordeSpawnTable getTable(ResourceLocation loc) {
+        HordeSpawnTable table = SPAWN_TABLES.get(loc);
+        if (table == null) HordesLogger.logInfo("Failed loading table " + loc + ", loading fallback table hordes:fallback");
+        return table == null ? getFallbackTable() : table;
+    }
+
+    public CompletableFuture<Suggestions> getSuggestions(CommandContext<CommandSourceStack> ctx, SuggestionsBuilder builder) {
+        return SharedSuggestionProvider.suggestResource(SPAWN_TABLES.keySet(), builder);
+    }
+    
+}

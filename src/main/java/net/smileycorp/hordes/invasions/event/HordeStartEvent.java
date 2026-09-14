@@ -1,0 +1,41 @@
+package net.smileycorp.hordes.invasions.event;
+
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraftforge.eventbus.api.Cancelable;
+import net.smileycorp.hordes.invasions.Constants;
+import net.smileycorp.hordes.invasions.capability.HordeEvent;
+
+@Cancelable
+public class HordeStartEvent extends HordePlayerEvent {
+	
+	protected final BlockPos pos;
+	protected String message = Constants.hordeEventStart;
+	protected final boolean wasCommand;
+
+	public HordeStartEvent(ServerPlayer player, HordeEvent horde, boolean wasCommand) {
+		super(player, horde);
+		pos = player.blockPosition();
+		this.wasCommand = wasCommand;
+	}
+
+	public BlockPos getPlayerPos() {
+		return pos;
+	}
+
+	//get the translation key for the start message
+	public String getMessage() {
+		return message;
+	}
+
+	//set the translation key for the start message
+	public void setMessage(String message) {
+		this.message = message;
+	}
+
+	//Whether the event was started with a command
+	public boolean wasCommand() {
+		return wasCommand;
+	}
+
+}
